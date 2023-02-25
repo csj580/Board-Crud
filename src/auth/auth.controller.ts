@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { ValidationPipe } from '@nestjs/common/pipes';
+import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { AuthCredentialsDto } from './dto/auth-credential.dto';
 import { User } from './user.entity';
@@ -16,5 +17,10 @@ export class AuthController {
     @Post('signin')
     signIn(@Body(ValidationPipe) authcredentialsDto: AuthCredentialsDto): Promise<{accessToken: string}> {
         return this.authService.signIn(authcredentialsDto);
+    }
+    @Post('/test')
+    @UseGuards(AuthGuard())
+    test(@Req() req) {
+        console.log('req', req);
     }
 }
