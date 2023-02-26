@@ -1,6 +1,9 @@
 /* eslint-disable prettier/prettier */
-import { Controller, Get, ParseIntPipe, ValidationPipe } from '@nestjs/common';
-import { Body, Delete, Param, Patch, Post, UsePipes } from '@nestjs/common/decorators';
+import { Controller, Get, Logger, ParseIntPipe, ValidationPipe } from '@nestjs/common';
+import { Body, Delete, Param, Patch, Post, UseGuards, UsePipes } from '@nestjs/common/decorators';
+import { AuthGuard } from '@nestjs/passport';
+import { getUser } from 'src/auth/get-user.decorator';
+import { User } from 'src/auth/user.entity';
 import { Board } from './board.entity';
 import { BoardStatus } from './board.status.enum';
 import { BoardsService } from './boards.service';
@@ -9,7 +12,9 @@ import { BoardStatusValidationPipe } from './pipes/board-status-validation.pipe'
 
 
 @Controller('boards')
+@UseGuards(AuthGuard())
 export class BoardsController {
+    private logger = new Logger('BoardController')
     constructor(private boardsService: BoardsService) {}
     
     // @Get()
@@ -18,8 +23,11 @@ export class BoardsController {
     // }
 
     @Get()
-    getAllBoard(): Promise<Board[]>{
-        return this.boardsService.getAllBoards();
+    getAllBoard(
+        @getUser() user: User
+    ): Promise<Board[]>{
+        this.logger.verbose(`User ${user.username} trying to get all boards`)
+        return this.boardsService.getAllBoards(user);
     }
 
     // @Post()
@@ -32,8 +40,11 @@ export class BoardsController {
 
     @Post()
     @UsePipes(ValidationPipe)
-    createBoard(@Body() CreateBoardDto: CreateBoardDto): Promise<Board> {
-        return this.boardsService.createBoard(CreateBoardDto);
+    createBoard(@Body() createBoardDto: CreateBoardDto,
+        @getUser() user: User): Promise<Board> {
+        this.logger.verbose(`User ${user.username} creating a new board.
+        Payload: ${JSON.stringify(createBoardDto)} `)
+        return this.boardsService.createBoard(createBoardDto, user);
     }
 
 
@@ -47,8 +58,10 @@ export class BoardsController {
     // }
 
     @Delete('/:id')
-    deleteBoard(@Param('id', ParseIntPipe) id): Promise<void> {
-        return this.boardsService.deleteBoard(id);        
+    deleteBoard(@Param('id', ParseIntPipe) id,
+    @getUser() user:User
+    ): Promise<void> {
+        return this.boardsService.deleteBoard(id, user);        
     }
 
     // @Delete('/:id')

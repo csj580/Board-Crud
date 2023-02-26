@@ -1,9 +1,10 @@
 /* eslint-disable prettier/prettier */
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { ValidationPipe } from '@nestjs/common/pipes';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { AuthCredentialsDto } from './dto/auth-credential.dto';
+import { getUser } from './get-user.decorator';
 import { User } from './user.entity';
 
 @Controller('auth')
@@ -14,13 +15,13 @@ export class AuthController {
         return this.authService.signUp(authcredentialsDto);
     }
     
-    @Post('signin')
+    @Post('/signin')
     signIn(@Body(ValidationPipe) authcredentialsDto: AuthCredentialsDto): Promise<{accessToken: string}> {
         return this.authService.signIn(authcredentialsDto);
     }
     @Post('/test')
     @UseGuards(AuthGuard())
-    test(@Req() req) {
-        console.log('req', req);
+    test(@getUser() user: User) {
+        console.log('user', user);
     }
 }
