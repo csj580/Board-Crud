@@ -29,3 +29,5 @@ yarn add bcryptjs --save          //  import * as bcrypt from 'bcryptjs'  for th
 yarn add @nestjs/jwt @nestjs/passport passport passport-jwt --save          // unique token when user login
 
 yarn add -g win-node-env      // only Windows
+
+yarn add --save @nestjs/config
