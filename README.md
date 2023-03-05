@@ -16,6 +16,8 @@ nest g controller name --no-spec          // creating controller of name
 
 nest g service name --no-spec           // creating service of name
 
+yarn add @nestjs/common     // installing @nestjs/common
+
 yarn add class-validator class-transformer --save           // using pipe for class-validator and class-transformer
 
 install Postman for server-client interaction         //Postman website
